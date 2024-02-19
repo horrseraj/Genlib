@@ -1,4 +1,4 @@
-import peewee  # , PostgresqlDatabase, TextField
+import peewee
 from datetime import datetime
 
 from database_manager import DatabaseManager
@@ -12,18 +12,19 @@ database_manager = DatabaseManager(
     port=local_settings.DATABASE['port'],
 )
 
+
 class SearchKey(peewee.Model):
     id = peewee.AutoField(primary_key=True)
     search_key = peewee.TextField(null=False, verbose_name='SearchKey')
     search_date = peewee.DateTimeField(default=datetime.now)
 
-class Meta:
-        database = database_manager.db    
+    class Meta:
+        database = database_manager.db
 
 
 class SearchResult(peewee.Model):
-    search_id = peewee.ForeignKeyField(
-        model=SearchKey, backref='results', on_delete='CASCADE')
+    search_id = peewee.ForeignKeyField(null=False,
+                                       model=SearchKey, backref='results', on_delete='CASCADE')
     book_id = peewee.CharField(
         max_length=10, null=False, verbose_name='BookId')
     authors = peewee.TextField(null=True, verbose_name='Authors')
@@ -36,6 +37,15 @@ class SearchResult(peewee.Model):
     size = peewee.CharField(max_length=50, null=True, verbose_name='Size')
     extension = peewee.CharField(
         max_length=50, null=True, verbose_name='Extension')
+
+    class Meta:
+        database = database_manager.db
+
+
+class Author(peewee.Model):
+    id = peewee.AutoField(primary_key=True)
+    name = peewee.CharField(max_length=100, null=False, verbose_name='Name')
+    create_date = peewee.DateTimeField(default=datetime.now)
 
     class Meta:
         database = database_manager.db

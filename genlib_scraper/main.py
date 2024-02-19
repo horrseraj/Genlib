@@ -5,7 +5,7 @@ import os
 import sys
 
 from genlib_scraper.spiders.genlib_spider import GenlibSpider
-from models import SearchKey, SearchResult
+from models import SearchKey, SearchResult, Author
 from database_manager import DatabaseManager
 import local_settings
 
@@ -22,8 +22,7 @@ database_manager = DatabaseManager(
 def run_spider(key, format, path):
     output_filename = f'{path}/output.{format}'
     process = CrawlerProcess(settings={
-        'FEED_FORMAT': format,
-        # You can change the output format and filename as needed
+        'FEED_FORMAT': format,        
         'FEED_URI': output_filename,
     })
     process.crawl(GenlibSpider, search_key=key)
@@ -54,7 +53,7 @@ if __name__ == "__main__":
     try:
         os.makedirs(path)
 
-        database_manager.create_tables(models=[SearchKey, SearchResult])
+        database_manager.create_tables(models=[SearchKey, SearchResult, Author])
 
         run_spider(args.key, args.format, path)
     except OSError as e:

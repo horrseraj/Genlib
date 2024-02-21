@@ -49,3 +49,46 @@ class Author(peewee.Model):
 
     class Meta:
         database = database_manager.db
+
+
+class Book(peewee.Model):
+    id = peewee.CharField(max_length=10, primary_key=True,
+                          null=False, verbose_name='ID')
+    title = peewee.TextField(null=False, verbose_name='Title')
+    series = peewee.TextField(null=True, verbose_name='Series')
+    publisher = peewee.TextField(null=True, verbose_name='Publisher')
+    year = peewee.IntegerField(null=True, verbose_name='Year')
+    language = peewee.CharField(
+        max_length=50, null=True, verbose_name='Language')
+    isbn10 = peewee.CharField(max_length=10, null=True, verbose_name='ISBN10')
+    isbn13 = peewee.CharField(max_length=13, null=True, verbose_name='ISBN13')
+    time_added = peewee.TextField(null=True, verbose_name='TimeAdded')
+    time_modified = peewee.TextField(null=True, verbose_name='TimeModified')
+    library = peewee.TextField(null=True, verbose_name='Library')
+    library_issue = peewee.TextField(null=True, verbose_name='LibraryIssue')
+    size = peewee.CharField(max_length=50, null=True, verbose_name='Size')
+    extension = peewee.CharField(
+        max_length=10, null=True, verbose_name='Extension')
+    worse_versions = peewee.TextField(null=True, verbose_name='Worseversions')
+    Desr_old_vers = peewee.TextField(null=True, verbose_name='DesrOldVers')
+    commentary = peewee.TextField(null=True, verbose_name='Commentary')
+    topic = peewee.TextField(null=True, verbose_name='Topic')
+    tags = peewee.TextField(null=True, verbose_name='Tags')
+    periodical = peewee.TextField(null=True, verbose_name='Periodical')
+    city = peewee.TextField(null=True, verbose_name='City')
+    edition = peewee.TextField(null=True, verbose_name='Edition')
+    pages_biblio = peewee.IntegerField(null=True, verbose_name='PagesBiblio')
+    pages_tech = peewee.IntegerField(null=True, verbose_name='PagesTech')
+    html = peewee.TextField(verbose_name='HTML')
+
+    class Meta:
+        database = database_manager.db
+
+
+class BookAuthor(peewee.Model):
+    book_id = peewee.ForeignKeyField(Book, backref='authors')
+    author_id = peewee.ForeignKeyField(Author, backref='books')
+
+    class Meta:
+        database = database_manager.db
+        primary_key = peewee.CompositeKey('book_id', 'author_id')

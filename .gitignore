@@ -3,6 +3,7 @@ __pycache__/
 output/
 *.py[cod]
 *$py.class
+*.rar
 
 # C extensions
 *.so

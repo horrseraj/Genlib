@@ -21,14 +21,14 @@ class GenlibSpider(scrapy.Spider):
             search_id = new_search.id
             url = f'https://libgen.rs/search.php?req={
                 search_key}&open=0&res=25&view=simple&phrase=1&column=def'  # &page={}'
-            yield scrapy.Request(url, self.parse, headers=headers, meta={'search_id': search_id})
+            yield scrapy.Request(url, callback=self.parse, headers=headers, meta={'search_id': search_id})
 
     def parse(self, response):
         # Extracting search results
         search_id = response.meta['search_id']
         # Skip the first <tr> element (header)
         trs = response.css('table.c tr')[1:]
-        for tr in trs:  # response.css('table.c tr'):
+        for tr in trs:  
             # Extracting data from each <td> element within the <tr> element
             book_id = tr.css('td:nth-of-type(1)::text').get()
             elements = tr.css('td:nth-of-type(2)')
@@ -45,13 +45,12 @@ class GenlibSpider(scrapy.Spider):
 
             try:
                 year = int(year)
-            except ValueError:
+            except (TypeError, ValueError):
                 year = 0
             try:
                 pages = int(pages)
-            except ValueError:
+            except (TypeError, ValueError):
                 pages = 0
-
             # Create an instance of SearchResult and save it to the database
             result = SearchResult.create(
                 search_id=search_id,
@@ -73,6 +72,10 @@ class GenlibSpider(scrapy.Spider):
                 yield scrapy.Request(link, callback=self.parse_book, meta={'authors': author_names})
 
     def parse_book(self, response):
+        self.logger.info('Entering parse_book method')
+        self.logger.info('Response URL: %s', response.url)
+        self.logger.info('Response status: %s', response.status)
+        
         html = response.text
         # Select the <tr> elements
         tr_elements = response.css('table tbody tr')[1:15]
@@ -168,5 +171,4 @@ class GenlibSpider(scrapy.Spider):
                 BookAuthor.create(book_id=new_book.id,
                                   author_id=author.id)
 
-        
-        yield None
+        yield Book
